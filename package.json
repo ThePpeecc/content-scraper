@@ -1,0 +1,23 @@
+{
+  "name": "content-scraper",
+  "version": "0.1.0",
+  "description": "",
+  "main": "scraper.js",
+  "dependencies": {
+    "x-ray": "^2.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThePpeecc/content-scraper.git"
+  },
+  "author": "Marcus Astrup Hansen",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/ThePpeecc/content-scraper/issues"
+  },
+  "homepage": "https://github.com/ThePpeecc/content-scraper#readme"
+}
