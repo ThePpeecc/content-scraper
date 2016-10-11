@@ -34,7 +34,7 @@ var scraper = ! function() {
     const siteLink = 'http://shirts4mike.com'; //The frontpage url should not change, so we define it at the start
 
     /**
-     * Is a template for how the data for the shirts is going to be found
+     * Is a template for how the data for the shirts is going to be found and procesed to cvs
      * @type {Object}
      */
     var shirtInformationTemplate = {
@@ -115,7 +115,7 @@ var scraper = ! function() {
                 numberOfShirts--;
                 if (error === null) { //Incase of error
                     shirtInformation.URL = shirt; //We add the shirt url here
-                    shirtInformation.Time = new Date().toLocaleString();
+                    shirtInformation.Time = new Date().toLocaleString(); //We add the timestamp here
                     allTheData.push(shirtInformation);
                 } else {
                     errorLog(error); //We log the error
@@ -143,6 +143,7 @@ var scraper = ! function() {
          * Because the javascript .toLocaleDateString() returns a
          * string in this (dd/mm/yyyy) format. It screws with the file system
          * therefore I split it by the / and restich the string with - instead
+         * We also reverse the date so the format should look like this (yyyy-mm-dd)
          */
         var dateToFix = new Date().toLocaleDateString().split("/").reverse();
         return dateToFix[0] + "-" + dateToFix[2] + "-" + dateToFix[1];
@@ -208,11 +209,10 @@ var scraper = ! function() {
                 text += 'Could not connect to url, either the connection is not stable or the url is invalid \n';
                 break;
             default:
+                text += error.message;
                 break;
         }
-
-        //We add the details of the error message at the bottom
-        text += 'Error-details: [ ';
+        text += 'Error-details: [ '; //We add the details of the error message at the bottom
         for (let errorPart in error) { //We add all the differet error parts in the error object
             text += '\n ' + errorPart + ': ' + error[errorPart];
         }
