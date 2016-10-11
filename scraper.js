@@ -1,6 +1,8 @@
 /*jshint esversion: 6*/
 
-var x = require('x-ray');
+const x = require('x-ray');
+const json2csv = require('json2csv');
+const fs = require('fs');
 
 
 /**
@@ -9,7 +11,7 @@ var x = require('x-ray');
  */
 var scraper = !function() {
 
-  var xray = x();
+  const xray = x();
 
   var shirtInformationTemplate = {
       imageUrl: '.shirt-picture img@src',
@@ -94,7 +96,21 @@ var scraper = !function() {
               */
               if (numberOfShirts === 0) { //All shirts have returned with thier findings
                   //Return the data
-                  console.log(allTheData);
+                  var fields = ['title', 'price', 'url', 'imageUrl'];
+
+                  try {
+                    var result = json2csv({ data: allTheData, fields: fields });
+                    fs.writeFile('message.csv', result, (err) => {
+                        if (err) throw err;
+                        console.log('It\'s saved!');
+                    });
+                    console.log(result);
+                  } catch (err) {
+                    // Errors are thrown for bad options, or if the data is empty and no fields are provided.
+                    // Be sure to provide fields if it is possible that your data array will be empty.
+                    console.error(err);
+                  }
+
               }
           });
       });

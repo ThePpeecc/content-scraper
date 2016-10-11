@@ -4,6 +4,7 @@
   "description": "",
   "main": "scraper.js",
   "dependencies": {
+    "json2csv": "^3.7.0",
     "x-ray": "^2.3.0"
   },
   "devDependencies": {},
