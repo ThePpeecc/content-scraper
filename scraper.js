@@ -5,6 +5,10 @@
  * I use this module because it allows me to write less http code, while it takes care of the scraping on the web.
  * It is  well suported with 25 contributers and the last commit to the project having been added 6-days ago, as i write this
  * It dose use outdated modules, but since I only use two npm modules in this project it should not be a problem
+ * Compared to other scraper modules, X-ray is very flexible and much better supported.
+ * I could have used request for scraping the website , and then searching for the information i need.
+ * But X-ray has the awesome option of adding JSON as a parameter, wich it will automaticly populate with data
+ * depending on what css selectors I use
  * @type {Module}
  */
 const x = require('x-ray');
@@ -27,6 +31,7 @@ const fs = require('fs');
 var scraper = ! function() {
 
     const xray = x(); //It should not change so we just make it a constant
+    const siteLink = 'http://shirts4mike.com'; //The frontpage url should not change, so we define it at the start
 
     /**
      * Is a template for how the data for the shirts is going to be found
@@ -139,8 +144,8 @@ var scraper = ! function() {
          * string in this (dd/mm/yyyy) format. It screws with the file system
          * therefore I split it by the / and restich the string with - instead
          */
-        var dateToFix = new Date().toLocaleDateString().split("/");
-        return dateToFix[1] + "-" + dateToFix[0] + "-" + dateToFix[2];
+        var dateToFix = new Date().toLocaleDateString().split("/").reverse();
+        return dateToFix[0] + "-" + dateToFix[2] + "-" + dateToFix[1];
     }
 
     /**
@@ -197,7 +202,7 @@ var scraper = ! function() {
      * @return {null}         We don't return anything
      */
     function errorLog(error) {
-        var text = 'Error in scraper at: [' + new Date().toLocaleString() + ']\n'; //Base string top
+        var text = '[' + new Date().toLocaleString() + '] { \nError in scraper.js: '; //Base string top
         switch (error.code) { //Here we run thorugh error code where we know the cause
             case 'ENOTFOUND': //Cold not connect or find the url
                 text += 'Could not connect to url, either the connection is not stable or the url is invalid \n';
@@ -206,14 +211,15 @@ var scraper = ! function() {
                 break;
         }
 
-        //We add the error message at the bottom
-        text += 'Error: ' + error.message;
+        //We add the details of the error message at the bottom
+        text += 'Error-details: [ ';
         for (let errorPart in error) { //We add all the differet error parts in the error object
             text += '\n ' + errorPart + ': ' + error[errorPart];
         }
-        console.log(text); //Error log the error
+        text += '\n]}\n';
+        console.log(text); //Log the error to the console
         //Last but not least we save a log of the error
-        saveData(text, 'scraper-error' + getDate() + ' | ' + new Date().toLocaleTimeString() + '.log', './error-logs');
+        fs.appendFile('./scraper-error.log', text);
     }
 
     /**
@@ -221,7 +227,7 @@ var scraper = ! function() {
      * That is also the function that starts the entire networking
      * @type {X-Ray}
      */
-    xray('http://shirts4mike.com', 'a', [{
+    xray(siteLink, 'a', [{
         link: '@href'
     }])(findShirts);
 }();
