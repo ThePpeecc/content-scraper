@@ -1,6 +1,16 @@
 /*jshint esversion: 6*/
 
 /**
+ * This file holds the scraper module for the shirts4mike site
+ *
+ * @summary   The module gets data about all the different shirts on the shirts4mike site, and saves it to a .csv file
+ *
+ * @since     12.10.2016
+ * @requires Node.js, X-Ray & json2csv
+ * @NOTE     [For devs only this module also uses eslint for code quality]
+ **/
+
+/**
  * X-ray is a module designed for scraper scripts
  * I use this module because it allows me to write less http code, while it takes care of the scraping on the web.
  * It is  well suported with 25 contributers and the last commit to the project having been added 6-days ago, as i write this
@@ -95,7 +105,6 @@ var scraper = ! function() {
                 //Do error log here
                 errorLog(error);
             }
-
         } else {
             //Do error log here
             errorLog(error);
@@ -171,7 +180,6 @@ var scraper = ! function() {
             errorLog(error); //We log the error
         }
     }
-
 
     /**
      * Save's data to a defined folder, or creates the folder
