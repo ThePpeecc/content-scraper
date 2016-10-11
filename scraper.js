@@ -1,10 +1,24 @@
 /*jshint esversion: 6*/
 
-
+/**
+ * X-ray is a module designed for scraper scripts
+ * I use this module because it allows me to write less http code, while it takes care of the scraping on the web.
+ * It is  well suported with 25 contributers and the last commit to the project having been added 6-days ago, as i write this
+ * It dose use outdated modules, but since I only use two npm modules in this project it should not be a problem
+ * @type {Module}
+ */
 const x = require('x-ray');
-const json2csv = require('json2csv');
-const fs = require('fs');
 
+/**
+ * json2csv is a module that has many different and powerfull features for converting json to csv
+ * It is a really well supported module with the last update having been released 3 weeks ago
+ * It also has a large group of 33 contributers to the source code
+ * Since this is a small module, json2csv is more than enough
+ * @type {Module}
+ */
+const json2csv = require('json2csv');
+
+const fs = require('fs');
 
 /**
  * The module that holds all the scraper variables and functions
@@ -120,13 +134,13 @@ var scraper = ! function() {
      * @return {String}   we return a modified date string
      */
     function getDate() {
-      /*
-       * Because the javascript .toLocaleDateString() returns a
-       * string in this (dd/mm/yyyy) format. It screws with the file system
-       * therefore I split it by the / and restich the string with - instead
-       */
-      var dateToFix = new Date().toLocaleDateString().split("/");
-      return dateToFix[1] + "-" + dateToFix[0] + "-" + dateToFix[2];
+        /*
+         * Because the javascript .toLocaleDateString() returns a
+         * string in this (dd/mm/yyyy) format. It screws with the file system
+         * therefore I split it by the / and restich the string with - instead
+         */
+        var dateToFix = new Date().toLocaleDateString().split("/");
+        return dateToFix[1] + "-" + dateToFix[0] + "-" + dateToFix[2];
     }
 
     /**
@@ -141,11 +155,11 @@ var scraper = ! function() {
         }
 
         try { //We try to convert the json file to a CSV file
-          var result = json2csv({
-              data: JSON,
-              fields: fields
-          });
-          return result; //and we retrun the csv file
+            var result = json2csv({
+                data: JSON,
+                fields: fields
+            });
+            return result; //and we retrun the csv file
         } catch (error) {
             // Errors are thrown for bad options, or if the data is empty and no fields are provided.
             errorLog(error); //We log the error
@@ -153,59 +167,61 @@ var scraper = ! function() {
     }
 
 
-/**
- * Save's data to a defined folder, or creates the folder
- * @param  {String} data   The data to be saved
- * @param  {String} file   The file name
- * @param  {String} folder The folder name
- * @return {null}          We don't return anything
- */
-function saveData(data, file, folder) {
-  fs.writeFile(folder + '/' + file, data, (error) => {
-      if (error !== null) {
-          if (error.code === 'ENOENT') {
-              console.log(folder + ' folder not found. Creating a new folder');
-              fs.mkdirSync(folder);
-              saveData(data, file, folder);
-          } else {
-              //Log error
-              errorLog(error);
-          }
-      }
-  });
-}
+    /**
+     * Save's data to a defined folder, or creates the folder
+     * @param  {String} data   The data to be saved
+     * @param  {String} file   The file name
+     * @param  {String} folder The folder name
+     * @return {null}          We don't return anything
+     */
+    function saveData(data, file, folder) {
+        //Here we try to find the folder and write the data to the file
+        //If the file already exist, we just override it
+        fs.writeFile(folder + '/' + file, data, (error) => {
+            if (error !== null) { //In case we get an error
+                if (error.code === 'ENOENT') { //If the error is because we can't find the specified folder,
+                    console.log(folder + ' folder not found. Creating a new folder');
+                    fs.mkdirSync(folder); //We create the folder
+                    saveData(data, file, folder); //and try to save the data again with the same parameters
+                } else {
+                    //Log error
+                    errorLog(error);
+                }
+            }
+        });
+    }
 
-/**
- * Function that logs an to the console and in the shape of an error log in error-logs folder
- * @param  {error} error  Any type of an error
- * @return {null}         We don't return anything
- */
-function errorLog(error) {
-  var text = 'Error in scraper at: [' + new Date().toLocaleString() + ']\n'; //Base string top
-  switch (error.code) { //Here we run thorugh error code where we know the cause
-    case 'ENOTFOUND': //Cold not connect or find the url
-      text += 'Could not connect to url, either the connection is not stable or the url is invalid \n';
-      break;
-    default:
-      break;
-  }
+    /**
+     * Function that logs an to the console and in the shape of an error log in error-logs folder
+     * @param  {error} error  Any type of an error
+     * @return {null}         We don't return anything
+     */
+    function errorLog(error) {
+        var text = 'Error in scraper at: [' + new Date().toLocaleString() + ']\n'; //Base string top
+        switch (error.code) { //Here we run thorugh error code where we know the cause
+            case 'ENOTFOUND': //Cold not connect or find the url
+                text += 'Could not connect to url, either the connection is not stable or the url is invalid \n';
+                break;
+            default:
+                break;
+        }
 
-  //We add the error message at the bottom
-  text += 'Error: ' + error.message;
-  for (let errorPart in error) { //We add all the differet error parts in the error object
-      text += '\n ' +  errorPart + ': ' + error[errorPart];
-  }
-  console.log(text); //Error log the error
-  //Last but not least we save a log of the error
-  saveData(text, 'scraper-error' + getDate() + ' | ' + new Date().toLocaleTimeString() + '.log', './error-logs');
-}
+        //We add the error message at the bottom
+        text += 'Error: ' + error.message;
+        for (let errorPart in error) { //We add all the differet error parts in the error object
+            text += '\n ' + errorPart + ': ' + error[errorPart];
+        }
+        console.log(text); //Error log the error
+        //Last but not least we save a log of the error
+        saveData(text, 'scraper-error' + getDate() + ' | ' + new Date().toLocaleTimeString() + '.log', './error-logs');
+    }
 
-/**
- * We try to scrape all links off the front page, and trow them into the findShirts callback function,
- * That is also the function that starts the entire networking
- * @type {X-Ray}
- */
-xray('http://shirts4mike.com', 'a', [{
-    link: '@href'
-}])(findShirts);
+    /**
+     * We try to scrape all links off the front page, and trow them into the findShirts callback function,
+     * That is also the function that starts the entire networking
+     * @type {X-Ray}
+     */
+    xray('http://shirts4mike.com', 'a', [{
+        link: '@href'
+    }])(findShirts);
 }();
