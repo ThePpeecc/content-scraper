@@ -21,7 +21,7 @@
  * depending on what css selectors I use
  * @type {Module}
  */
-const x = require('x-ray');
+const x = require('x-ray')
 
 /**
  * json2csv is a module that has many different and powerfull features for converting json to csv
@@ -30,18 +30,18 @@ const x = require('x-ray');
  * Since this is a small module, json2csv is more than enough
  * @type {Module}
  */
-const json2csv = require('json2csv');
+const json2csv = require('json2csv')
 
-const fs = require('fs');
+const fs = require('fs')
 
 /**
  * The module that holds all the scraper variables and functions
  * @type {Module}
  */
-var scraper = ! function() {
+! function() {
 
-    const xray = x(); //It should not change so we just make it a constant
-    const siteLink = 'http://shirts4mike.com'; //The frontpage url should not change, so we define it at the start
+    const xray = x() //It should not change so we just make it a constant
+    const siteLink = 'http://shirts4mike.com' //The frontpage url should not change, so we define it at the start
 
     /**
      * Is a template for how the data for the shirts is going to be found and procesed to cvs
@@ -53,7 +53,7 @@ var scraper = ! function() {
         ImageURL: '.shirt-picture img@src',
         URL: '',
         Time: ''
-    };
+    }
 
     /**
      * This is a callback function that finds the link where all the shirt links are located at
@@ -63,25 +63,25 @@ var scraper = ! function() {
      */
     function findShirts(error, possibleLinks) {
         if (error === null) { //As long as we have no error
-            var savedLink = '';
+            var savedLink = ''
             possibleLinks.forEach(possiblelink => { //We run through all possible links, and look for the link, that contains shirts.php
                 if (possiblelink.link.includes('shirts.php')) {
-                    savedLink = possiblelink.link; //This link dose so we save it
+                    savedLink = possiblelink.link //This link dose so we save it
                 }
-            });
+            })
 
             if (savedLink !== '') { //If we found a link
                 //We will start a new xray scrape of the site
                 xray(savedLink, 'a', [{
                     link: '@href'
-                }])(getShirts); //We use getShirts as the callback function here
+                }])(getShirts) //We use getShirts as the callback function here
             } else {
                 //Do error log here
-                errorLog(error);
+                errorLog(error)
             }
         } else {
             //Do error stuff here
-            errorLog(error);
+            errorLog(error)
         }
     }
 
@@ -93,21 +93,21 @@ var scraper = ! function() {
      */
     function getShirts(error, links) {
         if (error === null) { //Incase we got an error
-            var shirts = []; //Holds all the shirt links
+            var shirts = [] //Holds all the shirt links
             links.forEach(possibleShirt => { //Search an filter all non shirt links out
                 if (possibleShirt.link.includes('shirt.php')) {
-                    shirts.push(possibleShirt.link); //We found a shirt link, so we save it
+                    shirts.push(possibleShirt.link) //We found a shirt link, so we save it
                 }
-            });
+            })
             if (shirts.length > 0) { //Incase no shirt link was found
-                getShirtsInformation(shirts); //Call getShirtInformation with the array of shirt link
+                getShirtsInformation(shirts) //Call getShirtInformation with the array of shirt link
             } else {
                 //Do error log here
-                errorLog(error);
+                errorLog(error)
             }
         } else {
             //Do error log here
-            errorLog(error);
+            errorLog(error)
         }
     }
 
@@ -117,17 +117,17 @@ var scraper = ! function() {
      * @return {null}                       We don't return anything
      */
     function getShirtsInformation(shirts) {
-        var numberOfShirts = shirts.length;
-        var allTheData = []; //The data we want to save
+        var numberOfShirts = shirts.length
+        var allTheData = [] //The data we want to save
         shirts.forEach(shirt => { //Go through all the shirts
             xray(shirt, '#content', shirtInformationTemplate)(function(error, shirtInformation) {
-                numberOfShirts--;
+                numberOfShirts--
                 if (error === null) { //Incase of error
-                    shirtInformation.URL = shirt; //We add the shirt url here
-                    shirtInformation.Time = new Date().toLocaleString(); //We add the timestamp here
-                    allTheData.push(shirtInformation);
+                    shirtInformation.URL = shirt //We add the shirt url here
+                    shirtInformation.Time = new Date().toLocaleString() //We add the timestamp here
+                    allTheData.push(shirtInformation)
                 } else {
-                    errorLog(error); //We log the error
+                    errorLog(error)  //We log the error
                 }
                 /*
                  * We have been counting down the when moment when all
@@ -136,11 +136,11 @@ var scraper = ! function() {
                  * In any case, we have to return the data that we got
                  */
                 if (numberOfShirts === 0) { //All shirts have returned with thier findings
-                    var fileName = getDate() + '.csv';
-                    saveData(convertJSONtoCSV(allTheData), fileName, './data'); //Save the data at ./data
+                    var fileName = getDate() + '.csv'
+                    saveData(convertJSONtoCSV(allTheData), fileName, './data') //Save the data at ./data
                 }
-            });
-        });
+            })
+        })
     }
 
     /**
@@ -154,8 +154,8 @@ var scraper = ! function() {
          * therefore I split it by the / and restich the string with - instead
          * We also reverse the date so the format should look like this (yyyy-mm-dd)
          */
-        var dateToFix = new Date().toLocaleDateString().split("/").reverse();
-        return dateToFix[0] + "-" + dateToFix[2] + "-" + dateToFix[1];
+        var dateToFix = new Date().toLocaleDateString().split('/').reverse()
+        return dateToFix[0] + '-' + dateToFix[2] + '-' + dateToFix[1]
     }
 
     /**
@@ -164,20 +164,20 @@ var scraper = ! function() {
      * @return {String (CSV)}      Return's a string formatted in csv
      */
     function convertJSONtoCSV(JSON) {
-        var fields = [];
+        var fields = []
         for (let field in JSON[0]) { //We take a sample object from the json object
-            fields.push(field); //And we take all of it's properties and save them in fields
+            fields.push(field) //And we take all of it's properties and save them in fields
         }
 
         try { //We try to convert the json file to a CSV file
             var result = json2csv({
                 data: JSON,
                 fields: fields
-            });
-            return result; //and we retrun the csv file
+            })
+            return result  //and we retrun the csv file
         } catch (error) {
             // Errors are thrown for bad options, or if the data is empty and no fields are provided.
-            errorLog(error); //We log the error
+            errorLog(error)  //We log the error
         }
     }
 
@@ -194,15 +194,14 @@ var scraper = ! function() {
         fs.writeFile(folder + '/' + file, data, (error) => {
             if (error !== null) { //In case we get an error
                 if (error.code === 'ENOENT') { //If the error is because we can't find the specified folder,
-                    console.log(folder + ' folder not found. Creating a new folder');
-                    fs.mkdirSync(folder); //We create the folder
-                    saveData(data, file, folder); //and try to save the data again with the same parameters
+                    fs.mkdirSync(folder)  //We create the folder
+                    saveData(data, file, folder)  //and try to save the data again with the same parameters
                 } else {
                     //Log error
-                    errorLog(error);
+                    errorLog(error)
                 }
             }
-        });
+        })
     }
 
     /**
@@ -211,23 +210,23 @@ var scraper = ! function() {
      * @return {null}         We don't return anything
      */
     function errorLog(error) {
-        var text = '[' + new Date().toLocaleString() + '] { \nError in scraper.js: '; //Base string top
+        var text = '[' + new Date().toLocaleString() + '] { \nError in scraper.js: '  //Base string top
         switch (error.code) { //Here we run thorugh error code where we know the cause
-            case 'ENOTFOUND': //Cold not connect or find the url
-                text += 'Could not connect to url, either the connection is not stable or the url is invalid \n';
-                break;
-            default:
-                text += error.message;
-                break;
+        case 'ENOTFOUND': //Cold not connect or find the url
+            text += 'Could not connect to url, either the connection is not stable or the url is invalid \n'
+            break
+        default:
+            text += error.message
+            break
         }
-        text += 'Error-details: [ '; //We add the details of the error message at the bottom
+        text += 'Error-details: [ ' //We add the details of the error message at the bottom
         for (let errorPart in error) { //We add all the differet error parts in the error object
-            text += '\n ' + errorPart + ': ' + error[errorPart];
+            text += '\n ' + errorPart + ': ' + error[errorPart]
         }
-        text += '\n]}\n';
-        console.log(text); //Log the error to the console
+        text += '\n]}\n'
+        console.error(text) //Log the error to the console
         //Last but not least we save a log of the error
-        fs.appendFile('./scraper-error.log', text);
+        fs.appendFile('./scraper-error.log', text)
     }
 
     /**
@@ -237,5 +236,5 @@ var scraper = ! function() {
      */
     xray(siteLink, 'a', [{
         link: '@href'
-    }])(findShirts);
-}();
+    }])(findShirts)
+}()
