@@ -18,7 +18,8 @@
  * Compared to other scraper modules, X-ray is very flexible and much better supported.
  * I could have used request for scraping the website , and then searching for the information i need.
  * But X-ray has the awesome option of adding JSON as a parameter, wich it will automaticly populate with data
- * depending on what css selectors I use
+ * depending on what css selectors I use.
+ * Also this means i don't always have to search through all of the intire html page, since X-ray dose this for me
  * @type {Module}
  */
 const x = require('x-ray')
@@ -27,7 +28,8 @@ const x = require('x-ray')
  * json2csv is a module that has many different and powerfull features for converting json to csv
  * It is a really well supported module with the last update having been released 3 weeks ago
  * It also has a large group of 33 contributers to the source code
- * Since this is a small module, json2csv is more than enough
+ * It is also one of the most popular converters between json and csv. With over 96.000 downloads in only the last month alone
+ * Since this is a small module/project, json2csv is more than enough
  * @type {Module}
  */
 const json2csv = require('json2csv')
