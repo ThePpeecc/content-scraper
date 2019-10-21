@@ -8,7 +8,7 @@
     "x-ray": "^2.3.0"
   },
   "devDependencies": {
-    "eslint": "^3.7.1"
+    "eslint": "^6.5.1"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
